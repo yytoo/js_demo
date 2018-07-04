@@ -16,7 +16,15 @@
   <body>
     <div id="app"></div>
     <canvas id="canvas">当前浏览器不支持该版本</canvas>
+    <div>
+      半径: <input type="text" value="30" id="r"/>
+      半径缩小量: <input type="text" value="1" id="dR0"/>-<input type="text" value="3" id="dR1"/>
+      <button onclick="changeParam()">确认</button>
+
+    </div>
+
     <script src="./underscore.js"></script>
+    <script src="./jquery-3.3.1.js"></script>
     <script>
       //1. 获取当前画布
       const canvas = document.getElementById("canvas");
@@ -30,11 +38,11 @@
         /**
          * 构造器
         */
-        constructor(x, y, color){
+        constructor(x, y, r, color){
           this.x = x;
           this.y = y;
           this.color = color;
-          this.r = 40;
+          this.r = r;
         }
 
         /**
@@ -52,13 +60,13 @@
 
       //3. 会移动的小球类(继承Ball类)
       class moveBall extends Ball{
-        constructor(x,y,render){
-          super(x,y,render);  //使用super调用父类, 把三个参数传进去
+        constructor(x,y,r,render){
+          super(x,y,r,render);  //使用super调用父类, 把三个参数传进去
           
           //量的变化
           this.dX = _.random(-5,5);
           this.dY = _.random(-5,5);
-          this.dR = _.random(1,3);
+          this.dR = _.random(dR0,dR1);
         }
 
         update(){
@@ -74,10 +82,13 @@
       //4. 实例化小球
       let ballArray = [];
       let colorArray =['red','yellow','green','blue','pink','orange'];
+      let r = 30; // 默认小球半径
+      let dR0 = 1;
+      let dR1 = 3;
 
       //5. 监听鼠标移动
       canvas.addEventListener('mousemove', function(e){
-        ballArray.push(new moveBall(e.offsetX,e.offsetY,colorArray[_.random(0,colorArray.length-1)]));
+        ballArray.push(new moveBall(e.offsetX,e.offsetY,r,colorArray[_.random(0,colorArray.length-1)]));
         //console.log(ballArray)
       });
 
@@ -91,6 +102,28 @@
           ballArray[i].update();
         }
       }, 50)
+
+      //7. 修改小球参数
+      function changeParam(){
+        var uR = $("#r").val();
+        var uDR0 = $("#dR0").val();
+        var uDR1 = $("#dR1").val();
+        if(uR!=""){
+            r=parseInt(uR);
+        }
+        if(uDR0!=""){
+          dR0=parseInt(uDR0);
+        }
+        if(uDR1!=""){
+          dR1=parseInt(uDR1);
+        }
+        if(dR1<=dR0 || dR0-r>0 || dR1-r>0){
+          alert("dR0必须小于dR1, 且两者皆小于r");
+          dR0=1;
+          dR0=3;
+        }
+
+      }
     </script>
   </body>
 </html>
